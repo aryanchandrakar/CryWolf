@@ -67,69 +67,125 @@ class Scanner:
 
     # to discover any vulnerability generically add here
     def run_scanner(self):
+        # SSL warning
+        # print(Style.BRIGHT + Fore.YELLOW + "[!] Testing SSL certificate..." + Style.RESET_ALL)
+        # self.ssl_verify(self, self.target_url)
+
         for link in self.target_links:
             forms=self.extract_forms(link)
-
             # adding different form of vulnerability scanner - here XSS, can increase further
             for form in forms:
-                print(Style.BRIGHT +  Fore.YELLOW +"[+] Testing form in "+link)
+                print(Style.BRIGHT +  Fore.YELLOW +"[+] Testing form in "+link+Style.RESET_ALL)
+
+                # testing for XSS vulnerability
                 is_vulnerable_to_xss=self.test_xss_in_form(form,link)
                 if is_vulnerable_to_xss:
-                    self.alert_process()
-                    print(Style.BRIGHT +  Fore.RED +"\n\n-----> XSS discovered in "+link+" in following form")
-                    print(form)
-                    print(Style.BRIGHT +  Fore.GREEN +"\n[+] For safety no further steps being taken.")
-                    inp = input(Style.BRIGHT +"\n[-] Want to continue testing? [Y/N]")
+                    self.alert_process_XSS()
+                    print("\n\n"+Style.BRIGHT +  Fore.RED + Back.WHITE +"-----> XSS discovered in "+link +Style.RESET_ALL)
+                    chk=input(Style.BRIGHT +  Fore.CYAN +"[?] Get to know the vulnerable area?[Y/N]" +Style.RESET_ALL)
+                    if (chk == "Y" or chk == "y"):
+                        print(form) # to print the vulerable site
+                    print(Style.BRIGHT +  Fore.GREEN +"\n[+] For safety no further steps being taken."+Style.RESET_ALL)
+                    inp = input(Style.BRIGHT +"\n[-] Want to continue testing? [Y/N]"+Style.RESET_ALL)
                     if (inp == "Y" or inp == "y"):
                         continue
                     else:
-                        sys.exit(Style.BRIGHT +Fore.WHITE + " -- GOODBYE! -- ")
+                        sys.exit(Style.BRIGHT +Fore.WHITE + " -- GOODBYE! -- "+Style.RESET_ALL)
 
+                # testing for SQLi vulnerability
                 is_vulnerable_to_sql = self.test_sql_in_form(form, link)
                 if is_vulnerable_to_sql:
-                    self.alert_process()
-                    print(Style.BRIGHT +  Fore.RED +"\n\n-----> SQL discovered in " + link + " in following form")
-                    print(form)
-                    print(Style.BRIGHT +  Fore.GREEN +"\n[+] For safety no further steps being taken.")
-                    inp = input(Style.BRIGHT +"\n[-] Want to continue testing? [Y/N]")
+                    self.alert_process_SQL()
+                    print("\n\n"+Style.BRIGHT +  Fore.RED + Back.WHITE +"-----> SQL discovered in " + link +Style.RESET_ALL)
+                    chk = input(
+                        Style.BRIGHT + Fore.CYAN + "[?] Get to know the vulnerable area?[Y/N]" + Style.RESET_ALL)
+                    if (chk == "Y" or chk == "y"):
+                        print(form)  # to print the vulerable site
+                    print(Style.BRIGHT +  Fore.GREEN +"\n[+] For safety no further steps being taken."+Style.RESET_ALL)
+                    inp = input(Style.BRIGHT +"\n[-] Want to continue testing? [Y/N]"+Style.RESET_ALL)
                     if (inp == "Y" or inp=="y"):
                         continue
                     else:
-                        sys.exit(Style.BRIGHT +Fore.WHITE +" -- GOODBYE! -- ")
+                        sys.exit(Style.BRIGHT +Fore.WHITE +" -- GOODBYE! -- "+Style.RESET_ALL)
 
             if "=" in link: # means it send data through web application
-                print(Style.BRIGHT +  Fore.YELLOW +"[+] Testing " + link)
+                print(Style.BRIGHT +  Fore.YELLOW +"[+] Testing " + link+Style.RESET_ALL)
+                print(Style.BRIGHT + Fore.BLUE + "[!] Testing SSL certificate..." + Style.RESET_ALL)
+
+                # verfying SSL certificate
+                SSL_issue=self.ssl_verify(link)
+                if SSL_issue:
+                    self.alert_process_SSL()
+                    print(Style.BRIGHT +  Fore.GREEN +"\n[+] For safety no further steps being taken."+Style.RESET_ALL)
+                    inp = input(Style.BRIGHT + "\n[-] Want to continue testing? [Y/N]" + Style.RESET_ALL)
+                    if (inp == "N" or inp == "n"):
+                        sys.exit(Style.BRIGHT + Fore.WHITE + " -- GOODBYE! -- " + Style.RESET_ALL)
+
+                # testing for XSS vulnerability
                 is_vulnerable_to_xss=self.test_xss_in_link(link)
                 if is_vulnerable_to_xss:
-                    self.alert_process()
-                    print(Style.BRIGHT +  Fore.RED +"\n\n-----> Discovered XSS in "+link)
-                    print(Style.BRIGHT +  Fore.GREEN +"\n[+] For safety no further steps being taken.")
-                    inp = input(Style.BRIGHT +"\n[-] Want to continue testing? [Y/N]")
+                    self.alert_process_XSS()
+                    print("\n\n"+Style.BRIGHT +  Fore.RED + Back.WHITE +"-----> Discovered XSS in "+link+Style.RESET_ALL)
+                    print(Style.BRIGHT +  Fore.GREEN +"\n[+] For safety no further steps being taken."+Style.RESET_ALL)
+                    inp = input(Style.BRIGHT +"\n[-] Want to continue testing? [Y/N]"+Style.RESET_ALL)
                     if (inp == "Y" or inp == "y"):
                         continue
                     else:
-                        sys.exit(Style.BRIGHT +Fore.WHITE +" -- GOODBYE! -- ")
+                        sys.exit(Style.BRIGHT +Fore.WHITE +" -- GOODBYE! -- "+Style.RESET_ALL)
 
+                # testing for SQLi vulnerability
                 is_vulnerable_to_sql = self.test_sql_in_link(link)
                 if is_vulnerable_to_sql:
-                    self.alert_process()
-                    print(Style.BRIGHT +  Fore.RED +"\n\n-----> Discovered SQL_injection in " + link)
-                    print(Style.BRIGHT +  Fore.GREEN +"\n[+] For safety no further steps being taken.")
-                    inp = input(Style.BRIGHT +"\n[-] Want to continue testing? [Y/N]")
+                    self.alert_process_SQL()
+                    print("\n\n"+Style.BRIGHT +  Fore.RED + Back.WHITE +"-----> Discovered SQL_injection in " + link+Style.RESET_ALL)
+                    print(Style.BRIGHT +  Fore.GREEN +"\n[+] For safety no further steps being taken."+Style.RESET_ALL)
+                    inp = input(Style.BRIGHT +"\n[-] Want to continue testing? [Y/N]"+Style.RESET_ALL)
                     if (inp == "Y" or inp == "y"):
                         continue
                     else:
-                        sys.exit(Style.BRIGHT +Fore.WHITE +" -- GOODBYE! -- ")
+                        sys.exit(Style.BRIGHT +Fore.WHITE +" -- GOODBYE! -- "+Style.RESET_ALL)
 
 
-    def alert_process(self):
+    def alert_process_XSS(self):
         for i in (os.popen("ps ax | grep firefox | grep -v grep")):
             field = i.split()
             pid = field[0]
             os.kill(int(pid), signal.SIGKILL)
-        webbrowser.open_new_tab("index.html")
+        webbrowser.open_new_tab("indexXSS.html")
+
+    def alert_process_SQL(self):
+        for i in (os.popen("ps ax | grep firefox | grep -v grep")):
+            field = i.split()
+            pid = field[0]
+            os.kill(int(pid), signal.SIGKILL)
+        webbrowser.open_new_tab("indexSQL.html")
+
+    def alert_process_SSL(self):
+        for i in (os.popen("ps ax | grep firefox | grep -v grep")):
+            field = i.split()
+            pid = field[0]
+            os.kill(int(pid), signal.SIGKILL)
+        webbrowser.open_new_tab("indexSSL.html")
 
 ####################################################################################################
+# SSL VERIFICATION
+    # - all kind - wrong host ssl,expired ssl, untrusted root,
+    # self signed ssl, revoked ssl, bad pinning
+    def ssl_verify(self,link):
+        try:
+            requests.get(link, verify='_path to CS certificate bundle_') # included in the repo
+            print(Style.BRIGHT +  Fore.GREEN +"[+] Verified "+Style.RESET_ALL)
+            return False
+        except Exception as e:
+            if "ssl" in e or "SSL" in e:
+                print(Style.BRIGHT +  Fore.RED + e)
+                print(Style.BRIGHT +  Fore.RED + Back.WHITE +"[-] Insecure Transport (SSL error) vulnerability discovered in: " + link+Style.RESET_ALL)
+                return True
+
+            else:
+                print(Style.RESET_ALL+Fore.CYAN+"[!] Faced some irregular issue. Continuing...")
+                return False
+
 
 # DISCOVERING XSS VULNERABILITIES
     def test_xss_in_form(self,form,url):
