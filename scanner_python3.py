@@ -181,21 +181,18 @@ class Scanner:
                 print(Style.BRIGHT +  Fore.RED + e)
                 print(Style.BRIGHT +  Fore.RED + Back.WHITE +"[-] Insecure Transport (SSL error) vulnerability discovered in: " + link+Style.RESET_ALL)
                 return True
-
             else:
                 print(Style.RESET_ALL+Fore.CYAN+"[!] Faced some irregular issue. Continuing...")
                 return False
 
-
 # DISCOVERING XSS VULNERABILITIES
     def test_xss_in_form(self,form,url):
-        xss_test_script="<sCript>alert('hello')</scriPt>" # changing the capitalization of the code to
-        # bypass filters
-        response=self.submit_for(form,xss_test_script,url) # submitting form with xss value to the url
+        xss_test_script="<sCript>alert('hello')</scriPt>" 
+        response=self.submit_for(form,xss_test_script,url) 
+        # submitting form with xss value to the url
         return xss_test_script.encode() in response.content
 
-
-    # as we can pass the XSS vuln through the link too, not just forms
+    # pass the XSS vuln through the link
     def test_xss_in_link(self,url):
         xss_test_script="<sCript>alert('hello')</scriPt>"
         url=url.replace("=","="+xss_test_script)
@@ -203,15 +200,11 @@ class Scanner:
         return xss_test_script.encode() in response.content
 
 # DISCOVERING SQL VULNERABILITIES in forms and links
-# Here any kind of response from the website for the input is being considered as vulnerable
-    # as no input validation
-# 1=1
-# 1 union select user, password from users#
+# 1=1'#; 1 union select user, password from users#
     def test_sql_in_form(self,form,url):
         sql_test_script="1 UniOn Select user, password fRom users#"
         response=self.submit_for(form,sql_test_script,url)
         return sql_test_script.encode() in response.content
-
 
     def test_sql_in_link(self,url):
         sql_test_script="1 UniOn Select user, password fRom users#"
