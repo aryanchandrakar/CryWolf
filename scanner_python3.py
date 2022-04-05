@@ -173,26 +173,33 @@ class Scanner:
     # self signed ssl, revoked ssl, bad pinning
     def ssl_verify(self,link):
         try:
-            requests.get(link, verify='_path to CS certificate bundle_') # included in the repo
+            requests.get(link, verify='/etc/ssl/certs/ca-certificates.crt')
             print(Style.BRIGHT +  Fore.GREEN +"[+] Verified "+Style.RESET_ALL)
             return False
+        except requests.exceptions.SSLError as se:
+            reason = (str(se).split('"')[1])  # reason-bad handshake
+            caused_by = re.search("Caused by [\w]*", str(se)).group()# cause by
+            caused = str(re.search("Caused by SSLError[^a-z][\w]*", str(se)).group()).split("(")[1]# cause
+            print(Style.BRIGHT + Fore.RED + Back.WHITE +
+                  "[-] Insecure Transport (SSL error) vulnerability discovered in: " + link + Style.RESET_ALL)
+            print(Fore.BLACK+Back.RED +caused_by)
+            print(Fore.BLACK+Back.RED +caused)
+            print(Fore.RED +reason)
+            return True
         except Exception as e:
-            if "ssl" in e or "SSL" in e:
-                print(Style.BRIGHT +  Fore.RED + e)
-                print(Style.BRIGHT +  Fore.RED + Back.WHITE +"[-] Insecure Transport (SSL error) vulnerability discovered in: " + link+Style.RESET_ALL)
-                return True
-            else:
-                print(Style.RESET_ALL+Fore.CYAN+"[!] Faced some irregular issue. Continuing...")
-                return False
+            print(Style.RESET_ALL+Fore.CYAN+"[!] Faced some irregular issue. Continuing...")
+            return False
+
 
 # DISCOVERING XSS VULNERABILITIES
     def test_xss_in_form(self,form,url):
-        xss_test_script="<sCript>alert('hello')</scriPt>" 
-        response=self.submit_for(form,xss_test_script,url) 
-        # submitting form with xss value to the url
+        xss_test_script="<sCript>alert('hello')</scriPt>" # changing the capitalization of the code to
+        # bypass filters
+        response=self.submit_for(form,xss_test_script,url) # submitting form with xss value to the url
         return xss_test_script.encode() in response.content
 
-    # pass the XSS vuln through the link
+
+    # as we can pass the XSS vuln through the link too, not just forms
     def test_xss_in_link(self,url):
         xss_test_script="<sCript>alert('hello')</scriPt>"
         url=url.replace("=","="+xss_test_script)
@@ -200,11 +207,15 @@ class Scanner:
         return xss_test_script.encode() in response.content
 
 # DISCOVERING SQL VULNERABILITIES in forms and links
-# 1=1'#; 1 union select user, password from users#
+# Here any kind of response from the website for the input is being considered as vulnerable
+    # as no input validation
+# 1=1
+# 1 union select user, password from users#
     def test_sql_in_form(self,form,url):
         sql_test_script="1 UniOn Select user, password fRom users#"
         response=self.submit_for(form,sql_test_script,url)
         return sql_test_script.encode() in response.content
+
 
     def test_sql_in_link(self,url):
         sql_test_script="1 UniOn Select user, password fRom users#"
