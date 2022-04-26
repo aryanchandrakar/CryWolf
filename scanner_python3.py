@@ -192,6 +192,12 @@ class Scanner:
 
 
 # DISCOVERING XSS VULNERABILITIES
+# add other tests as per need like
+# •	“><h1>test</h1>
+# •	‘+alert(1)+’
+# •	“onmouseover=”alert(1)
+# •	http://”onmouseover=”alert(1) 
+
     def test_xss_in_form(self,form,url):
         xss_test_script="<sCript>alert('hello')</scriPt>" # changing the capitalization of the code to
         # bypass filters
@@ -201,7 +207,7 @@ class Scanner:
 
     # as we can pass the XSS vuln through the link too, not just forms
     def test_xss_in_link(self,url):
-        xss_test_script="<sCript>alert('hello')</scriPt>"
+        xss_test_script="<sCript>alert('hello')</scriPt>" # replace script here
         url=url.replace("=","="+xss_test_script)
         response=self.session.get(url)
         return xss_test_script.encode() in response.content
