@@ -78,7 +78,7 @@ The difference being the terminal points to the exact location where the vulnera
 * [Invalid SSL certi. alert](https://github.com/aryanchandrakar/CryWolf/blob/d9b4f4f67d961ad5a4ba4bd73918f2806e98c2f4/OUTPUT/SSL%20alert.jpg)
    
 ## Analysis
-10 different speed tests for each without & with Crywolf running in background were done, the result was a slight increase of latency of about 1.6 millisecond when surfing the web while an increase in retransmission rate of 0.4% was seen. The upload and download speed were affected negligible too, with an alteration of about 0.397 Mb/s for the download and 0.049 Mb/s for the upload speed when the script was running.
+10 different speed tests for each without & with Crywolf running in background were done, the result was a **slight increase of latency of about 1.6 millisecond** when surfing the web while an **increase in retransmission rate of 0.4%** was seen. The upload and download speed were affected negligible too, with an **alteration of about 0.397 Mb/s for the download and 0.049 Mb/s for the upload speed** when the script was running.
 
 While when these vulnerable sites were accessed on the system, none of the browser showed any sign of alert or warning for user to be cautious, the only display of any warning was in the address bar with a change in padlock icon in-front of the URL, which showed no alert unless being clicked upon, whereas on the other hand all such warnings and alert were displayed separately to the user developed to alert them about all necessary issues and potential threat.
 
