@@ -8,7 +8,7 @@ from scapy.layers import http
 from colorama import init, Fore, Back, Style
 
 
-def sniff(interface):
+def fetch_pckt(interface):
     scapy.sniff(iface=interface, store=False, prn=process_sniffed_packet)
 
 def get_url(packet):
@@ -27,4 +27,4 @@ def process_sniffed_packet(packet):
         vuln_scanner.crawl()
         vuln_scanner.run_scanner()
 
-sniff("eth0")
+fetch_pckt("eth0")
