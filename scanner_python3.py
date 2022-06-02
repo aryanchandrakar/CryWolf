@@ -67,10 +67,7 @@ class Scanner:
 
     # to discover any vulnerability generically add here
     def run_scanner(self):
-        # SSL warning
-        # print(Style.BRIGHT + Fore.YELLOW + "[!] Testing SSL certificate..." + Style.RESET_ALL)
-        # self.ssl_verify(self, self.target_url)
-
+        
         for link in self.target_links:
             forms=self.extract_forms(link)
             # adding different form of vulnerability scanner - here XSS, can increase further
@@ -144,8 +141,8 @@ class Scanner:
                         continue
                     else:
                         sys.exit(Style.BRIGHT +Fore.WHITE +" -- GOODBYE! -- "+Style.RESET_ALL)
-
-
+    
+   
     def alert_process_XSS(self):
         for i in (os.popen("ps ax | grep firefox | grep -v grep")):
             field = i.split()
@@ -171,6 +168,19 @@ class Scanner:
 # SSL VERIFICATION
     # - all kind - wrong host ssl,expired ssl, untrusted root,
     # self signed ssl, revoked ssl, bad pinning
+    
+#     def ssl_result(packet):
+#     target_url=packet
+#     print(Fore.BLUE+target_url+Style.RESET_ALL)
+#     vulnerable(target_url)
+
+#     def vulnerable(link):
+#         SSL_issue = ssl_verify(link)
+#         if SSL_issue:
+#             alert_process_SSL()
+#             print(Fore.YELLOW+"[+] For safety no further steps being taken."+Style.RESET_ALL)
+#         print("")
+
     def ssl_verify(self,link):
         try:
             requests.get(link, verify='/etc/ssl/certs/ca-certificates.crt')
